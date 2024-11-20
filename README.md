@@ -25,13 +25,15 @@ Per il controllo del nastro ho usato un sensore ir, che per non consumare, contr
 ## Carillon Motor
 per la gestione energetica del motore ho usato un dc-dc step down con collegato in parallelo al suo potenziometro, un altro da 10k intallato al lato del libro per scegliere la velocita della canzone in modo comodo.
 per non consumare ho connesso il dc-dc ad un mosfet.
-Motore: 3.9V Battery -> arduino -> mosfet -> dc-dc -> motor
+
+Flusso Motore: 3.9V Battery -> arduino -> mosfet -> dc-dc -> motor
 
 
 ## Nixie
 per la gesione del nixie in-4 ho usato uno step-up NCH6100HV [NCH6100HV](https://www.amazon.it/dp/B075FBYWH1?ref=ppx_yo2ov_dt_b_fed_asin_title) per usarlo ho usato un dc-dc step up [step-up](https://www.amazon.it/dp/B09Z2B3LTL?ref=ppx_yo2ov_dt_b_fed_asin_title)
 per non consumare ho connesso il dc-dc ad un mosfet connesso ad un transistor 2N2222.
-Nixie: 3.9V Battery -> arduino -> 2N2222 -> mosfet -> dc-dc -> NCH6100HV -> nixie -> driver k155id1 -> arduino
+
+Flusso Nixie: 3.9V Battery -> arduino -> 2N2222 -> mosfet -> dc-dc -> NCH6100HV -> nixie -> driver k155id1 -> arduino
 
 
 ## Settings selector
