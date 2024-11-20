@@ -1,10 +1,12 @@
 # Book Nixie Alarm
 
-Progetto per il regalo di compleanno di Josi,
-si compone di un libro di legno con inserito sul fianco un tupo nixie in-4 per segnare l'ora e un carillon mangia nastro da 30 note da usare come sveglia.
+Progetto per il regalo di compleanno di Josi.
+
+Si compone di un libro di legno con inserito sul fianco un tupo nixie in-4 per segnare l'ora e un carillon mangia nastro da 30 note da usare come sveglia.
 
 ## Arduino pro mini
 Il tutto è gestito da un arduino pro mini modificato con un MCP1700 per l'alimentazione in low power e una batteria 18650.
+
 Per la modifica low power ho usato questa guida [arduino pro low power](https://www.the-diy-life.com/making-an-ultra-low-power-arduino-pro/)
 
 ## Wood book
@@ -41,6 +43,7 @@ Per selezionare le opzioni del codice ho usato un potenziometro da 20K, ma anche
 
 ## Input touch
 Per la gestione dell'input con interrupt ho creato un sensore touch con 2 sonde usando 2 BC547 e una resistenza da 5.6M e una da 100K o 170K
+
 Ho usato questa [guida](https://elonics.org/simple-touch-switch-using-transistors/) dove al posto del led ci ho messo la resistenza di pull-up da 5.6M e il pin arduino.
 
 ## RTC DS3231
