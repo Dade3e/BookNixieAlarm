@@ -41,6 +41,7 @@ Per selezionare le opzioni del codice ho usato un potenziometro da 20K, ma anche
 
 ## Input touch
 Per la gestione dell'input con interrupt ho creato un sensore touch con 2 sonde usando 2 BC547 e una resistenza da 5.6M e una da 100K o 170K
+Ho usato questa [guida](https://elonics.org/simple-touch-switch-using-transistors/) dove al posto del led ci ho messo la resistenza di pull-up da 5.6M e il pin arduino.
 
 ## RTC DS3231
 Ho usato un rtc [DS3231](https://www.amazon.it/dp/B07QFLD5B6?ref=ppx_yo2ov_dt_b_fed_asin_title), modificato per fare low power con questa guida [DS3231 low power](https://sites.google.com/site/wayneholder/time-based-and-low-power-techniques-for-arduino).
