@@ -4,9 +4,9 @@ Progetto per il regalo di compleanno di Josi.
 
 Si compone di un libro di legno con inserito sul fianco un tupo nixie in-4 per segnare l'ora e un carillon mangia nastro da 30 note da usare come sveglia.
 
-![Top Book](images/top.png)
-![Top Book](images/inside.png)
-![Top Book](images/pot_details.png)
+![Top Book](images/top.jpg)
+![Top Book](images/inside.jpg)
+![Top Book](images/pot_details.jpg)
 
 
 ## Arduino pro mini
