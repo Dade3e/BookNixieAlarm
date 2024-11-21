@@ -136,6 +136,7 @@ void setup()
     //testSveglia();
 
     NIXIE0;
+    MOTOR0;
     spento();
     
 }
@@ -144,58 +145,64 @@ void loop()
 {
     // Allow wake up pin to trigger interrupt on low.
     attachInterrupt(0, wakeUp, LOW);
-    
     // Enter power down state with ADC and BOD module disabled.
     // Wake up when wake up pin is low.
     LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF); 
-    
     // Disable external pin interrupt on wake up pin.
     detachInterrupt(0);
 
     Serial.print("STATO = ");
     Serial.println(stato);
-    
 
     //INTERRUPT TOUCH
     if(stato == 1){
-      //spengo nixie
+      //spengo nixie e motore
       NIXIE0;
+      MOTOR0;
       spento();
       int pvalue = checkPot();
       Serial.print("POT ");
       Serial.println(pvalue);
-      if(pvalue < limits[0]){  //stato sveglia normale
+      //stato sveglia normale e sveglia non suona, tanto la sveglia viene gestita allo stato = 2
+      if(pvalue < limits[1]){
         Serial.println("CHECK ORA");
         DateTime now = rtc.now();
         mostraOra(now);
         testSveglia();
       }
-      else if(pvalue >= limits[0] && pvalue < limits[1]){ //sveglia disattiva
-        Serial.println("CHECK ORA NON SUONA");
-        DateTime now = rtc.now();
-        mostraOra(now);
-      }
-      else if(pvalue >= limits[1] && pvalue < limits[2]){ //load tape
+
+      //LOAD TAPE
+      else if(pvalue >= limits[1] && pvalue < limits[2]){
         Serial.println("LOAD TAPE");
-        delay(1000);
+        delay(100);
         loadTape();
       }
 
-
+      //CARILLON
       else if(pvalue >= limits[2] && pvalue < limits[3]){ //carillon
         Serial.println("CARILLON");
+        loadTape();
         IR1;
         delay(1);
         int IRValue = digitalRead(IR);
         IR0;
-        if(IRValue == 1){
-          MOTOR1;
-        }else{
-          MOTOR0;
+        MOTOR1;
+        while(IRValue == 1 && digitalRead(wakeUpPin) == HIGH){
+          IR1;
+          delay(1);
+          IRValue = digitalRead(IR);
+          IR0;
+          delay(50);
+          Serial.print(IRValue);
+          Serial.print(" ");
+          Serial.println(digitalRead(wakeUpPin));
         }
+        MOTOR0;
+        if(digitalRead(wakeUpPin) == LOW){while(digitalRead(wakeUpPin) == LOW){delay(50);}}
+        delay(100);
       }
 
-      
+      //BATTERY CHECK
       else if(pvalue >= limits[3] && pvalue < limits[4]){ //battery check
         Serial.println("BATTERY CHECK");
         BAT1;
@@ -209,20 +216,18 @@ void loop()
         Serial.print(sensorValue);
         Serial.print(" ");
         Serial.println(battVal);
-        
+
         NIXIE1;
-        delay(100);
-        
+        delay(500);
         printDigit(battVal);
         delay(3000);
-        
         NIXIE0;
         spento();
 
         delay(100);
       }
 
-
+      //SET SVEGLIA
       else if(pvalue >= limits[4] && pvalue < limits[5]){ //set sveglia
         Serial.println("SET SVEGLIA");
         DateTime alarm = rtc.getAlarm1();
@@ -230,14 +235,14 @@ void loop()
         //Solo mostra la sveglia impostata
         if(digitalRead(wakeUpPin) == LOW){while(digitalRead(wakeUpPin) == LOW){delay(50);}}
         while(digitalRead(wakeUpPin) == HIGH && setAlarm == false){
+          mostraOra(alarm);
           int pvalue = checkPot();
           if(pvalue <= limits[4] || pvalue > limits[5]) // se muovo il cursore, setto la sveglia
             setAlarm = true;
-          mostraOra(alarm);
           delay(500);
         }
         if(digitalRead(wakeUpPin) == LOW){while(digitalRead(wakeUpPin) == LOW){delay(50);}}
-        delay(1000);
+        delay(100);
         if(setAlarm == true){
           int h = 0;
           int m = 0;
@@ -245,7 +250,7 @@ void loop()
           NIXIE1;
           while(digitalRead(wakeUpPin) == HIGH){
             int pvalue = checkPot();
-            h = map(pvalue, 0, 1023, 0, 23);
+            h = map(pvalue, 0, 1023, 0, 24);
             
             printDigit(h/10);
             delay(350);
@@ -264,7 +269,7 @@ void loop()
           delay(1000);
           while(digitalRead(wakeUpPin) == HIGH){
             int pvalue = checkPot();
-            m = map(pvalue, 0, 1023, 0, 59);
+            m = map(pvalue, 0, 1023, 0, 60);
             printDigit(m/10);
             delay(350);
             //spento();
@@ -291,11 +296,12 @@ void loop()
           }
           alarm = rtc.getAlarm1();
           mostraOra(alarm);
+          delay(1000);
           //testSveglia();
         }
       }
 
-
+      //SET OROLOGIO
       else if(pvalue >= limits[5] && pvalue < limits[6]){ //set orologio
         Serial.println("SET OROLOGIO");
         int h = 0;
@@ -304,7 +310,7 @@ void loop()
         NIXIE1;
         while(digitalRead(wakeUpPin) == HIGH){
           int pvalue = checkPot();
-          h = map(pvalue, 0, 1023, 0, 23);
+          h = map(pvalue, 0, 1023, 0, 24);
           
           printDigit(h/10);
           delay(350);
@@ -320,10 +326,10 @@ void loop()
           Serial.println(h);          
         }
         if(digitalRead(wakeUpPin) == LOW){while(digitalRead(wakeUpPin) == LOW){delay(50);}}
-        delay(1000);
+        delay(100);
         while(digitalRead(wakeUpPin) == HIGH){
           int pvalue = checkPot();
-          m = map(pvalue, 0, 1023, 0, 59);
+          m = map(pvalue, 0, 1023, 0, 60);
           printDigit(m/10);
           delay(350);
           //spento();
@@ -342,9 +348,12 @@ void loop()
         delay(100);
         DateTime now = rtc.now();
         rtc.adjust(DateTime(now.year(), now.month(), now.day(), h, m, 0));
-      }else{
+      }
+
+      //OLTRE Il 1020, NON FARE NULLA, MODALITA TRASPORTO
+      else{
         Serial.println("NOTHING");
-        delay(100);
+        delay(50);
         //nothing
       }
       stato = 0;
@@ -390,7 +399,6 @@ void loop()
         MOTOR0;
         if(digitalRead(wakeUpPin) == LOW){while(digitalRead(wakeUpPin) == LOW){delay(50);}}
       }
-      
       stato = 0;
     }
     Serial.println("END LOOP");
