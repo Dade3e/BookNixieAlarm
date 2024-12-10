@@ -168,7 +168,8 @@ void loop()
         Serial.println("CHECK ORA");
         DateTime now = rtc.now();
         mostraOra(now);
-        testSveglia();
+        //testSveglia();
+        delay(1000);
       }
 
       //LOAD TAPE
